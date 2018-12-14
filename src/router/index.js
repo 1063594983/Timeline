@@ -8,7 +8,7 @@ import userIndex from '@/user_index'
 
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
 	mode: 'history',
   routes: [
     {
@@ -26,7 +26,26 @@ export default new Router({
     },{
     	path: '/user_index',
     	name:'userIndex',
+    	meta: {
+    		requireAuth: true
+    	},
     	component: userIndex
     }
   ]
 })
+
+router.beforeEach((to, from, next) => {
+	if(to.meta.requireAuth) {
+		if(new Vue().$cookie.get("token")) {
+			next();
+		} else {
+			next({
+				path: "/login"
+			})
+		}
+	} else {
+		next();
+	}
+})
+
+export default router;

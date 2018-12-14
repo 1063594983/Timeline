@@ -28,6 +28,7 @@
 				<el-col :span="12" :offset="6">
 					<el-form-item>
 						<el-button type="primary" @click="submitForm('form')">注册</el-button>
+						<el-button @click="$router.push('/login')">登录</el-button>
 						<el-button @click="resetForm('form')">取消</el-button>
 					</el-form-item>
 				</el-col>

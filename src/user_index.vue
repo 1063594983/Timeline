@@ -2,22 +2,32 @@
 	<div>
 		<h1>user_index</h1>
 		<el-button size="medium" :loading="btnStyle" @click="addMore">更多</el-button>
-		<el-button @click="login">登录</el-button>
-		<el-button @click="sendMessage">发布</el-button>
 		<div style="height: 500px; overflow: auto;">
-			<div v-for="x in showList" :key="x.id">
-			<el-card class="box-card" :span="12" :offset="6">
-				<div style="float: left;">
-					<img :src="imageT" style="width: 100px; height: 100px;" />
-				</div>
-				<div style="float: left ;">
-					<h3>{{ x.author.username }} | {{ getTime(x.createdAt) }}</h3>
-					<h1>{{ x.body }}</h1>
-				</div>
-			</el-card>
-		</div>
+			<div v-for="x in showList" :key="x.id" @click="showMessage(x.body)">
+				<el-card class="box-card" :span="12" :offset="6">
+					<el-container>
+						<el-aside width="100px"><img :src="imageT" style="width: 100px; height: 100px;" /></el-aside>
+						<el-container>
+							<el-header height="20px">
+								<h3 style="float: left;">{{ x.author.username }} | {{ getTime(x.createdAt) }}</h3></el-header>
+							<el-main>
+								<p style="text-align: left; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">{{ x.body }}</p>
+							</el-main>
+						</el-container>
+					</el-container>
+
+				</el-card>
+			</div>
 		</div>
 		<el-button size="medium" :loading="btnStyle" @click="addMore">更多</el-button>
+		
+		<el-dialog title="消息" :visible.sync="dialogVisible" width="50%">
+			<span>{{ messageDetails }}</span>
+			<span slot="footer" class="dialog-footer">
+    <el-button @click="dialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+  </span>
+		</el-dialog>
 	</div>
 </template>
 
@@ -28,7 +38,9 @@
 			return {
 				messageList: [],
 				imageT: "../static/image/link.jpg",
-				btnStyle: false
+				btnStyle: false,
+				messageDetails: '',
+				dialogVisible: false
 			}
 		},
 		created() {
@@ -40,12 +52,17 @@
 			showList() {
 				var showList = this.messageList;
 				showList.sort((a, b) => {
-					return (new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+					return(new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 				})
 				return showList;
 			}
 		},
 		methods: {
+			showMessage(message) {
+				this.messageDetails = message;
+				this.dialogVisible = true;
+
+			},
 			getTime(time) {
 				var createdAt = new Date(time);
 				var now = new Date();
@@ -56,39 +73,13 @@
 				}
 				var hours = Math.round(minutes / 60);
 				if(hours <= 24) {
-					return minutes + "小时前";
+					return hours + "小时前";
 				}
 				var days = Math.round(hours / 24);
 				if(days < 3) {
 					return days + "天前";
 				}
 				return createdAt.datetime();
-			},
-			login() {
-				this.$axios.post("/api/users/login", {
-					"user": {
-						"email": "1234@qq.com",
-						"password": "123"
-					}
-				}).then(res => {
-					token = res.data.user.token;
-				})
-			},
-			sendMessage() {
-				this.$axios({
-					url: '/api/messages',
-					method: 'post',
-					headers: {
-						"Authorization": "Bearer " + token
-					},
-					data: {
-						"message": {
-							"body": "gbk is a 乐观boy"
-						}
-					}
-				}).then(res => {
-					console.log(res);
-				})
 			},
 			addMore() {
 				this.btnStyle = true;
@@ -99,7 +90,7 @@
 						"message": "加载成功",
 						"type": "success"
 					})
-					
+
 				})
 			}
 		}
