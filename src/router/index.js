@@ -23,10 +23,9 @@ export default new Router({
     	path: '/register',
     	name: 'register',
     	component: register
-    },
-    {
+    },{
     	path: '/user_index',
-    	name: 'userIndex',
+    	name:'userIndex',
     	component: userIndex
     }
   ]
