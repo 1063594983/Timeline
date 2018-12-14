@@ -30,7 +30,7 @@
 		methods: {
 			handleSelect(key, keyPath) {
 				this.$emit('message', key);
-				console.log(key, keyPath);
+				console.log(key);
 			}
 		}
 	}

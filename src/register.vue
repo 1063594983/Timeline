@@ -6,6 +6,11 @@
 			</el-col>
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px" class="demo-ruleForm">
 				<el-col :span="12" :offset="6">
+					<el-form-item label="邮箱" prop="email">
+						<el-input v-model="form.email"></el-input>
+					</el-form-item>
+				</el-col>
+				<el-col :span="12" :offset="6">
 					<el-form-item label="用户名" prop="username">
 						<el-input v-model="form.username"></el-input>
 					</el-form-item>
@@ -24,7 +29,6 @@
 					<el-form-item>
 						<el-button type="primary" @click="submitForm('form')">注册</el-button>
 						<el-button @click="resetForm('form')">取消</el-button>
-						<el-button @click="showMsg">获取</el-button>
 					</el-form-item>
 				</el-col>
 			</el-form>
@@ -46,11 +50,17 @@
 			};
 			return {
 				form: {
+					email: '',
 					username: '',
 					password: '',
 					repassword: ''
 				},
 				rules: {
+					email: [{
+						required: true,
+						message: '请输入邮箱',
+						trigger: 'blur'
+					}],
 					username: [{
 						required: true,
 						message: '请输入用户名',
@@ -69,43 +79,21 @@
 			}
 		},
 		methods: {
-			showMsg() {
-				this.$axios({
-					"url" : "/api/messages",
-					type : "get"
-				}).then(res => {
-					console.log(res);
-				})
-			},
 			submitForm(formName) {
 				this.$refs[formName].validate(valid => {
 					if(valid) {
-						/*
-						this.$axios.post('/api/user/addUser', {
-							username: this.form.username,
-							password: this.form.password
-						}).then(response => {
-							if(response.data == 'Refuse!') {
-								this.$message({
-									message: '该用户名已被注册!',
-									type: 'error'
-								})
-							} else {
-								this.$cookieStore.setCookie('username', this.form.username);
-								this.$router.push({
-									path: '/sale/goods-sale'
-								});
-							}
-						})
-						*/
 						this.$axios.post('/api/users', {
 							"user" : {
 								"username" : this.form.username,
-								"email" : "1111@qq.com",
+								"email" : this.form.email,
 								"password" : this.form.password
 							}
 						}).then(res => {
-							console.log(res);
+							this.$router.push({
+								path: '/login'
+							})
+						}).catch(err => {
+							console.log(err);
 						})
 					} else {
 						return false;

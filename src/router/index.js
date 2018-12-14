@@ -26,11 +26,11 @@ export default new Router({
     	name: 'register',
     	component: register
     }, {
-    	path: '/userIndex',
-    	name: 'userIndex',
+    	path: '/user_index',
+    	name:'userIndex',
     	component: userIndex
     },  {
-    	path: '/userInfo',
+    	path: '/user_info',
     	name: 'userInfo',
     	component: userInfo
     }

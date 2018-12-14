@@ -1,4 +1,5 @@
 <template>
+	<div>
 	<div id='loginForm'>
 		<h1>Timeline</h1>
 		<el-form :model='form' ref='form' label-width='100px' class="demo-ruleForm" :rules='rules'>
@@ -19,6 +20,7 @@
 				</el-form-item>
 			</el-col>
 		</el-form>
+	</div>
 	</div>
 </template>
 
@@ -67,7 +69,7 @@
 								}).then(response => {
 									console.log(response);
 									this.$router.push({
-										path: '/userIndex'
+										path: '/user_index'
 									})
 								}).catch(error => {
 									this.$message('账号或密码错误!')

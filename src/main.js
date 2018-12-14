@@ -12,6 +12,10 @@ Vue.use(ElementUI);
 
 Vue.prototype.$axios = axios;
 
+Date.prototype.datetime = function() {
+	return this.getFullYear() + '-' + ('0' + (this.getMonth() + 1)).slice(-2) + '-' + this.getDate() + ' ' + this.getHours() + ':' + ('0' + (this.getMinutes())).slice(-2) + ':' + this.getSeconds();
+};
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
