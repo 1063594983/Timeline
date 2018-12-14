@@ -5,6 +5,8 @@ import HelloWorld from '@/components/HelloWorld'
 import login from '@/login'
 import register from '@/register'
 import userIndex from '@/user_index'
+import userInfo from '@/user_info'
+import userHeader from '@/user-header'
 
 Vue.use(Router)
 
@@ -25,8 +27,12 @@ export default new Router({
     	component: register
     }, {
     	path: '/userIndex',
-    	name:'userIndex',
+    	name: 'userIndex',
     	component: userIndex
+    },  {
+    	path: '/userInfo',
+    	name: 'userInfo',
+    	component: userInfo
     }
   ]
 })
