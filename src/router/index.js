@@ -4,10 +4,12 @@ import HelloWorld from '@/components/HelloWorld'
 
 import login from '@/login'
 import register from '@/register'
+import userIndex from '@/user_index'
 
 Vue.use(Router)
 
 export default new Router({
+	mode: 'history',
   routes: [
     {
       path: '/',
@@ -21,6 +23,11 @@ export default new Router({
     	path: '/register',
     	name: 'register',
     	component: register
+    },
+    {
+    	path: '/user_index',
+    	name: 'userIndex',
+    	component: userIndex
     }
   ]
 })
