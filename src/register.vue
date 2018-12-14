@@ -101,7 +101,7 @@
 						this.$axios.post('/api/users', {
 							"user" : {
 								"username" : this.form.username,
-								"email" : "1110@qq.com",
+								"email" : "1111@qq.com",
 								"password" : this.form.password
 							}
 						}).then(res => {
