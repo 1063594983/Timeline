@@ -3,17 +3,17 @@
 	<div id='loginForm'>
 		<h1>Timeline</h1>
 		<el-form :model='form' ref='form' label-width='100px' class="demo-ruleForm" :rules='rules'>
-			<el-col :span="10" :offset="7">
+			<el-col :span="16" :offset="2">
 				<el-form-item label="邮箱" prop='email'>
 					<el-input type='email' v-model='form.email'></el-input>
 				</el-form-item>
 			</el-col>
-			<el-col :span="10" :offset="7">
+			<el-col :span="16" :offset="2">
 				<el-form-item label="密码" prop='email'>
 					<el-input type="password" v-model="form.password" autocomplete="off"></el-input>
 				</el-form-item>
 			</el-col>
-			<el-col :span="10" :offset="7">
+			<el-col :span="16" :offset="2">
 				<el-form-item>
 					<el-button type="primary" plain @click="login('form')">登录</el-button>
 					<el-button @click="register">注册</el-button>
@@ -41,7 +41,7 @@
 						{
 							type: 'email',
 							message: '请输入正确的邮箱地址',
-							trigger: ['blur', 'change']
+							trigger: 'blur'
 						}
 					],
 					password: [{
@@ -67,13 +67,12 @@
 										}
 									}
 								}).then(response => {
-									console.log(response);
+									this.$cookie.set("token", response.data.user.token);
 									this.$router.push({
 										path: '/user_index'
 									})
 								}).catch(error => {
 									this.$message('账号或密码错误!')
-									//if(error) alert('登录失败')
 								})
 							} else {
 								this.$message('格式错误!');

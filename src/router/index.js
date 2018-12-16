@@ -10,7 +10,7 @@ import userHeader from '@/user-header'
 
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
 	mode: 'history',
   routes: [
     {
@@ -28,6 +28,9 @@ export default new Router({
     }, {
     	path: '/user_index',
     	name:'userIndex',
+    	meta: {
+    		requireAuth: true
+    	},
     	component: userIndex
     },  {
     	path: '/user_info',
@@ -36,3 +39,19 @@ export default new Router({
     }
   ]
 })
+
+router.beforeEach((to, from, next) => {
+	if(to.meta.requireAuth) {
+		if(new Vue().$cookie.get("token")) {
+			next();
+		} else {
+			next({
+				path: "/login"
+			})
+		}
+	} else {
+		next();
+	}
+})
+
+export default router;

@@ -1,24 +1,55 @@
 <template>
 	<div>
-		<user-header id="header" @message="handleSelect"></user-header>
-		<h1>user_index</h1>
-		<el-button size="medium" :loading="btnStyle" @click="addMore">更多</el-button>
-		<el-button @click="login">登录</el-button>
-		<el-button @click="sendMessage">发布</el-button>
+		<user-header id="header" @message="handleSelect" v-bind:headImage="headImage"></user-header>
+
+		<el-button style="position: absolute; left: 0%; right: 0%;" size="medium" type="primary" plain
+			:loading="btnStyle" @click="addMore">
+			查看更多消息
+		</el-button>
+		<br />
+		<br />
 		<div style="height: 500px; overflow: auto;">
-			<div v-for="x in showList" :key="x.id">
+			<div v-for="x in showList" :key="x.id" @click="showMessage(x.body)">
 				<el-card class="box-card" :span="12" :offset="6">
-					<div style="float: left;">
-						<img :src="imageT" style="width: 100px; height: 100px;" />
-					</div>
-					<div style="float: left ;">
-						<h3>{{ x.author.username }} | {{ getTime(x.createdAt) }}</h3>
-						<h1>{{ x.body }}</h1>
-					</div>
+					<el-container>
+						<el-aside width="100px"><img :src="imageT" style="width: 100px; height: 100px;" /></el-aside>
+						<el-container>
+							<el-header height="20px">
+								<h3 style="float: left;">{{ x.author.username }} | {{ getTime(x.createdAt) }}</h3></el-header>
+							<el-main>
+								<p style="text-align: left; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">{{ x.body }}</p>
+							</el-main>
+						</el-container>
+					</el-container>
+
 				</el-card>
 			</div>
 		</div>
-		<el-button size="medium" :loading="btnStyle" @click="addMore">更多</el-button>
+		<el-button size="medium" :loading="btnStyle">更多</el-button>
+
+		<el-dialog title="消息" :visible.sync="dialogVisible" width="50%">
+			<span>{{ messageDetails }}</span>
+			<span slot="footer" class="dialog-footer">
+    <el-button @click="dialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+  </span>
+		</el-dialog>
+
+		<el-dialog title="消息" :visible.sync="releaseVisible" width="50%">
+			<span>{{ messageDetails }}</span>
+			<span slot="footer" class="dialog-footer">
+    <el-button @click="releaseVisible = false">取 消</el-button>
+    <el-button type="primary" @click="releaseVisible = false">确 定</el-button>
+  </span>
+		</el-dialog>
+
+		<el-dialog title="消息" :visible.sync="infoVisible" width="50%">
+			<span>{{ messageDetails }}</span>
+			<span slot="footer" class="dialog-footer">
+    <el-button @click="infoVisible = false">取 消</el-button>
+    <el-button type="primary" @click="infoVisible = false">确 定</el-button>
+  </span>
+		</el-dialog>
 	</div>
 </template>
 
@@ -30,7 +61,12 @@
 			return {
 				messageList: [],
 				imageT: "../static/image/link.jpg",
-				btnStyle: false
+				btnStyle: false,
+				messageDetails: '',
+				dialogVisible: false,
+				releaseVisible: false,
+				infoVisible: false,
+				headImage: "../static/image/IMG_9996.JPG"
 			}
 		},
 		created() {
@@ -49,22 +85,29 @@
 		},
 		methods: {
 			handleSelect(key, keyPath) {
-				switch(key){
+				switch(key) {
 					case '1-1':
-					this.$router.push({
-						path: '/user_info'
-					});
-					break;
-					
+						this.infoVisible = true;
+						break;
 					case '1-2':
-					console.log('logout');
-					break;
-					
-					//case: '2':
-					
-					
+						this.$cookie.remove('token');
+						this.$router.push({
+							path: '/login'
+						});
+						break;
+					/*
+					case '2':
+						this.addMore();
+						break;
+					case '3':
+						this.releaseVisible = true;
+						break;
+					 */
 				}
-					
+			},
+			showMessage(message) {
+				this.messageDetails = message;
+				this.dialogVisible = true;
 
 			},
 			getTime(time) {
@@ -77,7 +120,7 @@
 				}
 				var hours = Math.round(minutes / 60);
 				if(hours <= 24) {
-					return minutes + "小时前";
+					return hours + "小时前";
 				}
 				var days = Math.round(hours / 24);
 				if(days < 3) {
@@ -85,41 +128,11 @@
 				}
 				return createdAt.datetime();
 			},
-			login() {
-				this.$axios.post("/api/users/login", {
-					"user": {
-						"email": "1234@qq.com",
-						"password": "123"
-					}
-				}).then(res => {
-					token = res.data.user.token;
-				})
-			},
-			sendMessage() {
-				this.$axios({
-					url: '/api/messages',
-					method: 'post',
-					headers: {
-						"Authorization": "Bearer " + token
-					},
-					data: {
-						"message": {
-							"body": "gbk is a 乐观boy"
-						}
-					}
-				}).then(res => {
-					console.log(res);
-				})
-			},
 			addMore() {
 				this.btnStyle = true;
 				this.$axios.get("/api/messages").then(res => {
 					this.messageList = res.data.messages;
 					this.btnStyle = false;
-					this.$message({
-						"message": "加载成功",
-						"type": "success"
-					})
 
 				})
 			}
