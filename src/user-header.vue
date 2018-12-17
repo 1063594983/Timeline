@@ -4,16 +4,13 @@
 			id="menu" text-color="#4D4D4D" active-text-color="#ffffff">
 			<el-submenu index="1">
 				<template slot="title">
-					<img id="imagecss" :src="head" height="50" />
+					<img id="imagecss" :src="headImage" height="40px" />
 				</template>
 				
-				<el-menu-item index="1-1">个人信息</el-menu-item>
+				<el-menu-item index="1-1">昵称: {{ nickName }}</el-menu-item>
 				<el-menu-item index="1-2">注销</el-menu-item>
 			</el-submenu>
-			<!--
-			<el-menu-item index="2">新消息</el-menu-item>
-			<el-menu-item index="3">发布</el-menu-item>
-			-->
+			<el-menu-item index="2">发布</el-menu-item>
 		</el-menu>
 	</div>
 </template>
@@ -38,6 +35,10 @@
 			headImage: {
 				type: String,
 				required: true
+			},
+			nickName: {
+				type: String,
+				default: 'Jack'
 			}
 		}
 	}

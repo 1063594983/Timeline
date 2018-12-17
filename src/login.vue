@@ -68,6 +68,8 @@
 									}
 								}).then(response => {
 									this.$cookie.set("token", response.data.user.token);
+									this.$cookie.set("username", response.data.user.username);
+									console.log(response);
 									this.$router.push({
 										path: '/user_index'
 									})

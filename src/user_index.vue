@@ -1,10 +1,10 @@
 <template>
 	<div>
-		<user-header id="header" @message="handleSelect" v-bind:headImage="headImage"></user-header>
+		<user-header id="header" @message="handleSelect" v-bind:headImage="headImage" v-bind:nickName="$cookie.get('username')"></user-header>
 
 		<el-button style="position: absolute; left: 0%; right: 0%;" size="medium" type="primary" plain
 			:loading="btnStyle" @click="addMore">
-			查看更多消息
+			加载最新消息
 		</el-button>
 		<br />
 		<br />
@@ -25,7 +25,7 @@
 				</el-card>
 			</div>
 		</div>
-		<el-button size="medium" :loading="btnStyle">更多</el-button>
+		<el-button size="medium">更多</el-button>
 
 		<el-dialog title="消息" :visible.sync="dialogVisible" width="50%">
 			<span>{{ messageDetails }}</span>
@@ -35,27 +35,21 @@
   </span>
 		</el-dialog>
 
-		<el-dialog title="消息" :visible.sync="releaseVisible" width="50%">
-			<span>{{ messageDetails }}</span>
-			<span slot="footer" class="dialog-footer">
+		<el-dialog title="发布" :visible.sync="releaseVisible" width="50%">
+		<div id="editorElem" style="text-align:left; height: 100px; width: 100px;"></div>
+   		
     <el-button @click="releaseVisible = false">取 消</el-button>
     <el-button type="primary" @click="releaseVisible = false">确 定</el-button>
   </span>
 		</el-dialog>
 
-		<el-dialog title="消息" :visible.sync="infoVisible" width="50%">
-			<span>{{ messageDetails }}</span>
-			<span slot="footer" class="dialog-footer">
-    <el-button @click="infoVisible = false">取 消</el-button>
-    <el-button type="primary" @click="infoVisible = false">确 定</el-button>
-  </span>
-		</el-dialog>
 	</div>
 </template>
 
 <script>
 	import userHeader from './user-header'
-
+	import E from 'wangeditor'
+	
 	export default {
 		data() {
 			return {
@@ -65,8 +59,8 @@
 				messageDetails: '',
 				dialogVisible: false,
 				releaseVisible: false,
-				infoVisible: false,
-				headImage: "../static/image/IMG_9996.JPG"
+				headImage: "../static/image/IMG_9996.JPG",
+				messageReleaseContent: ''
 			}
 		},
 		created() {
@@ -74,7 +68,17 @@
 				this.messageList = res.data.messages;
 			})
 		},
+		mounted() {
+			var editor = new E('#editorElem')
+        editor.customConfig.onchange = (html) => {
+          this.editorContent = html
+        }
+        editor.create()
+		},
 		computed: {
+			getContent() {
+				console.log(this.messageReleaseContent);
+			},
 			showList() {
 				var showList = this.messageList;
 				showList.sort((a, b) => {
@@ -91,18 +95,14 @@
 						break;
 					case '1-2':
 						this.$cookie.remove('token');
+						this.$cookie.remove('username');
 						this.$router.push({
 							path: '/login'
 						});
 						break;
-					/*
 					case '2':
-						this.addMore();
-						break;
-					case '3':
 						this.releaseVisible = true;
 						break;
-					 */
 				}
 			},
 			showMessage(message) {
