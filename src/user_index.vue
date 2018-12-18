@@ -2,13 +2,13 @@
 	<div>
 		<user-header id="header" @message="handleSelect" v-bind:headImage="headImage" v-bind:nickName="$cookie.get('username')"></user-header>
 
-		<el-button style="position: absolute; left: 0%; right: 0%;" size="medium" type="primary" plain
-			:loading="btnStyle" @click="addMore">
+		<el-button style="position: fixed; left: 0%; right: 0%;" size="medium" type="primary" plain :loading="btnStyle" 
+			@click="addMore">
 			加载最新消息
 		</el-button>
 		<br />
 		<br />
-		<div style="height: 500px; overflow: auto;">
+		<div style="height: 80; overflow: auto;">
 			<div v-for="x in showList" :key="x.id" @click="showMessage(x.body)">
 				<el-card class="box-card" :span="12" :offset="6">
 					<el-container>
@@ -36,11 +36,17 @@
 		</el-dialog>
 
 		<el-dialog title="发布" :visible.sync="releaseVisible" width="50%">
-		<div id="editorElem" style="text-align:left; height: 100px; width: 100px;"></div>
-   		
-    <el-button @click="releaseVisible = false">取 消</el-button>
-    <el-button type="primary" @click="releaseVisible = false">确 定</el-button>
-  </span>
+			<!--<div id="editorElem" style="text-align:left; height: 100px; width: 100px;"></div> -->
+			<el-input type="textarea" v-model="messageReleaseContent"></el-input>
+			<el-upload ref="images" action="https://jsonplaceholder.typicode.com/posts/" list-type="picture-card" :on-preview="handlePictureCardPreview" :on-remove="handleRemove">
+				<i class="el-icon-plus"></i>
+			</el-upload>
+			<el-dialog :visible.sync="imageVisible">
+				<img width="100%" :src="dialogImageUrl" alt="" />
+			</el-dialog>
+			<el-button @click="releaseVisible = false">取 消</el-button>
+			<el-button type="primary" @click="releaseMessage">确 定</el-button>
+			</span>
 		</el-dialog>
 
 	</div>
@@ -48,32 +54,26 @@
 
 <script>
 	import userHeader from './user-header'
-	import E from 'wangeditor'
-	
+
 	export default {
 		data() {
 			return {
 				messageList: [],
-				imageT: "../static/image/link.jpg",
+				imageT: "../static/image/head.jpg",
 				btnStyle: false,
 				messageDetails: '',
 				dialogVisible: false,
 				releaseVisible: false,
 				headImage: "../static/image/IMG_9996.JPG",
-				messageReleaseContent: ''
+				messageReleaseContent: '',
+				dialogImageUrl: '',
+				imageVisible: false
 			}
 		},
 		created() {
 			this.$axios.get("/api/messages").then(res => {
 				this.messageList = res.data.messages;
 			})
-		},
-		mounted() {
-			var editor = new E('#editorElem')
-        editor.customConfig.onchange = (html) => {
-          this.editorContent = html
-        }
-        editor.create()
 		},
 		computed: {
 			getContent() {
@@ -133,7 +133,32 @@
 				this.$axios.get("/api/messages").then(res => {
 					this.messageList = res.data.messages;
 					this.btnStyle = false;
-
+					scroll(0, 0);
+				})
+			},
+			handleRemove(file, fileList) {
+				console.log(file, fileList);
+			},
+			handlePictureCardPreview(file) {
+				this.dialogImageUrl = file.url;
+				this.dialogVisible = true;
+			},
+			releaseMessage() {
+				this.$axios({
+					method: 'post',
+					url: '/api/messages',
+					data: {
+						"message": {
+							"body": this.messageReleaseContent
+						}
+					},
+					headers: {"Authorization" : "Bearer " + this.$cookie.get('token')}
+				}).then(res => {
+					this.releaseVisible = false;
+					this.messageReleaseContent = '';
+					console.log('success');
+					this.$refs['images'].clearFiles();
+					
 				})
 			}
 		},
@@ -145,7 +170,7 @@
 
 <style>
 	#header {
-		position: absolute;
+		position: fixed;
 		top: 0px;
 		left: 0px;
 		right: 0px;
